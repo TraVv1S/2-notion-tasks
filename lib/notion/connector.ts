@@ -11,8 +11,18 @@ const notion = new Client({
 
 const taskDB = env!.NOTION_TASK_DB;
 
+function splitIntoChunks(text: string, chunkSize: number): string[] {
+    const chunks: string[] = [];
+    let i = 0;
+    while (i < text.length) {
+        chunks.push(text.slice(i, i + chunkSize));
+        i += chunkSize;
+    }
+    return chunks;
+}
+
 export default {
-    createTask: function (title: string, tgAuthor: string, url?: string): Promise<CreatePageResponse> {
+    createTask: function (title: string, tgAuthor: string, url?: string, body?: string): Promise<CreatePageResponse> {
         ll('creating task', title, 'from', tgAuthor, url ? `with url ${url}` : '');
         const properties: any = {
             Name: {
@@ -58,11 +68,27 @@ export default {
             };
         }
 
+        const children = body
+            ? splitIntoChunks(body, 1900).slice(0, 90).map((chunk) => ({
+                object: "block" as const,
+                type: "paragraph" as const,
+                paragraph: {
+                    rich_text: [
+                        {
+                            type: "text" as const,
+                            text: { content: chunk }
+                        }
+                    ]
+                }
+            }))
+            : undefined;
+
         return notion.pages.create({
             parent: {
                 database_id: taskDB
             },
-            properties
+            properties,
+            ...(children ? { children } : {})
 
         });
     },

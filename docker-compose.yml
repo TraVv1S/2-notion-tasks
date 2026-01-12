@@ -10,6 +10,7 @@ services:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - TELEGRAM_OWNER_ID=${TELEGRAM_OWNER_ID}
       - TELEGRAM_ALLOW_IDS=${TELEGRAM_ALLOW_IDS}
+      - GROQ_TOKEN=${GROQ_TOKEN}
 networks:
   reverse-proxy:
     external:

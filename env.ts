@@ -16,7 +16,8 @@ let envs = {
     NOTION_TASK_DB: process.env.NOTION_TASK_DB,
     TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
     TELEGRAM_OWNER_ID: Number(process.env.TELEGRAM_OWNER_ID),
-    TELEGRAM_ALLOW_IDS: process.env.TELEGRAM_ALLOW_IDS ? process.env.TELEGRAM_ALLOW_IDS.split(',').map(e => Number(e)) : []
+    TELEGRAM_ALLOW_IDS: process.env.TELEGRAM_ALLOW_IDS ? process.env.TELEGRAM_ALLOW_IDS.split(',').map(e => Number(e)) : [],
+    GROQ_TOKEN: process.env.GROQ_TOKEN
 };
 
 export default envs;
