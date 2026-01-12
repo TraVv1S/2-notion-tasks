@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "sourceMap": true,
-    "target": "ES2017",
+    "target": "ES2022",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "outDir": "dist",
