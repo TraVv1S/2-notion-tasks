@@ -38,6 +38,7 @@ TELEGRAM_BOT_TOKEN - токен вашего Telegram бота
 TELEGRAM_OWNER_ID - telegram id владельца
 
 GROQ_TOKEN - токен API для Groq (Speech-to-Text). Нужен для расшифровки аудио/voice сообщений.
+Этот же ключ используется для бесплатной LLM-саммаризации (генерация заголовка и TLDR) через Groq Chat Completions.
 
 ## Возможность отправлять задачи другими постановщиками
 

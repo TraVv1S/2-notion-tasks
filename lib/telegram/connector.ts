@@ -43,6 +43,16 @@ function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;");
 }
 
+function splitIntoChunks(text: string, chunkSize: number): string[] {
+  const chunks: string[] = [];
+  let i = 0;
+  while (i < text.length) {
+    chunks.push(text.slice(i, i + chunkSize));
+    i += chunkSize;
+  }
+  return chunks;
+}
+
 async function createNotionTaskFromText(text: string, tgAuthor: string) {
   const extracted = extractFirstUrl(text);
   const url = extracted?.url;
@@ -64,20 +74,91 @@ async function createNotionTaskFromAudioTranscript(
   const extracted = extractFirstUrl(transcript);
   const url = extracted?.url;
 
-  const cleanTitle = extracted
+  const llmInput = transcript.trim();
+  const llmTextForPrompt =
+    llmInput.length > 12000 ? llmInput.slice(0, 12000) : llmInput;
+
+  let llmTitle = "";
+  let tldr: string[] = [];
+  try {
+    const res = await groqConnector.generateTitleAndTldrRu(llmTextForPrompt);
+    llmTitle = res.title;
+    tldr = res.tldr;
+  } catch (e) {
+    ll("groq llm failed", String(e));
+  }
+
+  // ensure no URL leaks into the generated title
+  const titleExtracted = llmTitle ? extractFirstUrl(llmTitle) : null;
+  const cleanGeneratedTitle = llmTitle
+    ? titleExtracted
+      ? removeFirstUrlFromText(llmTitle, titleExtracted)
+      : llmTitle
+    : "";
+
+  const fallbackTitleBase = extracted
     ? removeFirstUrlFromText(transcript, extracted) || extracted.url
     : transcript;
 
-  const title50 = cleanTitle.trim().slice(0, 50).trim() || "Аудио";
+  const finalTitle =
+    (cleanGeneratedTitle || fallbackTitleBase).trim().slice(0, 80).trim() ||
+    "Аудио";
+
+  const childrenBlocks: any[] = [];
+
+  if (tldr.length > 0) {
+    childrenBlocks.push({
+      object: "block" as const,
+      type: "heading_3" as const,
+      heading_3: {
+        rich_text: [{ type: "text" as const, text: { content: "TLDR" } }],
+      },
+    });
+    for (const bullet of tldr.slice(0, 7)) {
+      childrenBlocks.push({
+        object: "block" as const,
+        type: "bulleted_list_item" as const,
+        bulleted_list_item: {
+          rich_text: [{ type: "text" as const, text: { content: bullet } }],
+        },
+      });
+    }
+  }
+
+  childrenBlocks.push({
+    object: "block" as const,
+    type: "divider" as const,
+    divider: {},
+  });
+  childrenBlocks.push({
+    object: "block" as const,
+    type: "heading_3" as const,
+    heading_3: {
+      rich_text: [{ type: "text" as const, text: { content: "Расшифровка" } }],
+    },
+  });
+
+  // Notion block limits are easy to hit; keep it conservative
+  const transcriptChunks = splitIntoChunks(transcript, 1900).slice(0, 70);
+  for (const chunk of transcriptChunks) {
+    childrenBlocks.push({
+      object: "block" as const,
+      type: "paragraph" as const,
+      paragraph: {
+        rich_text: [{ type: "text" as const, text: { content: chunk } }],
+      },
+    });
+  }
 
   const createTaskResult = await notionConnector.createTask(
-    title50,
+    finalTitle,
     tgAuthor,
     url ?? undefined,
-    transcript
+    undefined,
+    childrenBlocks
   );
 
-  return { createTaskResult, title: title50 };
+  return { createTaskResult, title: finalTitle };
 }
 
 export default {

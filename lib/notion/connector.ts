@@ -22,7 +22,13 @@ function splitIntoChunks(text: string, chunkSize: number): string[] {
 }
 
 export default {
-    createTask: function (title: string, tgAuthor: string, url?: string, body?: string): Promise<CreatePageResponse> {
+    createTask: function (
+        title: string,
+        tgAuthor: string,
+        url?: string,
+        body?: string,
+        childrenBlocks?: any[]
+    ): Promise<CreatePageResponse> {
         ll('creating task', title, 'from', tgAuthor, url ? `with url ${url}` : '');
         const properties: any = {
             Name: {
@@ -68,7 +74,9 @@ export default {
             };
         }
 
-        const children = body
+        const children = childrenBlocks
+            ? childrenBlocks
+            : body
             ? splitIntoChunks(body, 1900).slice(0, 90).map((chunk) => ({
                 object: "block" as const,
                 type: "paragraph" as const,
