@@ -25,6 +25,14 @@ NOTION_TOKEN - токен из Notion
 
 NOTION_TASK_DB - идентификатор базы данных задач
 
+Для корректной работы бот ожидает, что в базе задач Notion есть свойства:
+
+- Name (title)
+- TGAuthor (rich text)
+- Status (select)
+- Source (select)
+- URL (url) — заполняется автоматически, если в сообщении есть ссылка
+
 TELEGRAM_BOT_TOKEN - токен вашего Telegram бота
 
 TELEGRAM_OWNER_ID - telegram id владельца
@@ -34,4 +42,5 @@ TELEGRAM_OWNER_ID - telegram id владельца
 При необходимости, можно дать возможность ставить задачи другим пользователям. Для этого в переменную окружения TELEGRAM_ALLOW_IDS, через запятую, необходимо указать Telegram id пользователей.
 
 TELEGRAM_ALLOW_IDS=ID1,ID2,ID3
-____________________________________________________________________________
+
+---

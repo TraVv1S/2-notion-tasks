@@ -12,48 +12,57 @@ const notion = new Client({
 const taskDB = env!.NOTION_TASK_DB;
 
 export default {
-    createTask: function (title: string, tgAuthor: string): Promise<CreatePageResponse> {
-        ll('creating task', title, 'from', tgAuthor);
+    createTask: function (title: string, tgAuthor: string, url?: string): Promise<CreatePageResponse> {
+        ll('creating task', title, 'from', tgAuthor, url ? `with url ${url}` : '');
+        const properties: any = {
+            Name: {
+                type: "title",
+                title: [
+                    {
+                        type: "text",
+                        text: {
+                            content: title
+                        }
+                    }
+                ]
+            },
+            TGAuthor: {
+                type: "rich_text",
+                rich_text: [
+                    {
+                        type: "text",
+                        text: {
+                            content: tgAuthor
+                        }
+                    }
+                ]
+            },
+            Status: {
+                type: "select",
+                select: {
+                    name: 'Backlog'
+                }
+            },
+            Source: {
+                type: "select",
+                select: {
+                    name: 'Telegram'
+                }
+            }
+        };
+
+        if (url) {
+            properties.URL = {
+                type: "url",
+                url
+            };
+        }
+
         return notion.pages.create({
             parent: {
                 database_id: taskDB
             },
-            properties: {
-                Name: {
-                    type: "title",
-                    title: [
-                        {
-                            type: "text",
-                            text: {
-                                content: title
-                            }
-                        }
-                    ]
-                },
-                TGAuthor: {
-                    type: "rich_text",
-                    rich_text: [
-                        {
-                            type: "text",
-                            text: {
-                                content: tgAuthor
-                            }
-                        }
-                    ]
-                },
-                Status: {
-                    type: "select",
-                    select: {
-                        name: 'Backlog'
-                    }
-                },
-                Source: {
-                    type: "select",
-                    select: {
-                        name: 'Telegram'
-                    }
-                }
-            }
+            properties
 
         });
     },
