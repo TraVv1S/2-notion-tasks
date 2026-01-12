@@ -1,23 +1,26 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
 if (
-    !process.env.NOTION_TOKEN
-    || !process.env.NOTION_TASK_DB
-    || !process.env.TELEGRAM_BOT_TOKEN
-    || !process.env.TELEGRAM_OWNER_ID
+  !process.env.NOTION_TOKEN ||
+  !process.env.NOTION_TASK_DB ||
+  !process.env.TELEGRAM_BOT_TOKEN ||
+  !process.env.TELEGRAM_OWNER_ID
 ) {
-    throw new Error('env parameter error');
+  throw new Error("env parameter error");
 }
 
 let envs = {
-    NOTION_TOKEN: process.env.NOTION_TOKEN,
-    NOTION_TASK_DB: process.env.NOTION_TASK_DB,
-    TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
-    TELEGRAM_OWNER_ID: Number(process.env.TELEGRAM_OWNER_ID),
-    TELEGRAM_ALLOW_IDS: process.env.TELEGRAM_ALLOW_IDS ? process.env.TELEGRAM_ALLOW_IDS.split(',').map(e => Number(e)) : [],
-    GROQ_TOKEN: process.env.GROQ_TOKEN
+  NOTION_TOKEN: process.env.NOTION_TOKEN,
+  NOTION_TASK_DB: process.env.NOTION_TASK_DB,
+  TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
+  TELEGRAM_OWNER_ID: Number(process.env.TELEGRAM_OWNER_ID),
+  TELEGRAM_ALLOW_IDS: process.env.TELEGRAM_ALLOW_IDS
+    ? process.env.TELEGRAM_ALLOW_IDS.split(",").map((e) => Number(e))
+    : [],
+  GROQ_TOKEN: process.env.GROQ_TOKEN,
+  GROQ_LLM_MODEL: process.env.GROQ_LLM_MODEL,
 };
 
 export default envs;

@@ -11,6 +11,7 @@ services:
       - TELEGRAM_OWNER_ID=${TELEGRAM_OWNER_ID}
       - TELEGRAM_ALLOW_IDS=${TELEGRAM_ALLOW_IDS}
       - GROQ_TOKEN=${GROQ_TOKEN}
+      - GROQ_LLM_MODEL=${GROQ_LLM_MODEL}
 networks:
   reverse-proxy:
     external:

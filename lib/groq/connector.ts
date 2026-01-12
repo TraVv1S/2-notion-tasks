@@ -16,6 +16,10 @@ function getGroqToken(): string {
   return token;
 }
 
+function getGroqLlmModel(): string {
+  return env.GROQ_LLM_MODEL || "llama-3.1-8b-instant";
+}
+
 export type GroqTranscriptionOptions = {
   fileUrl: string;
   fileName: string;
@@ -96,10 +100,11 @@ export default {
     transcript: string
   ): Promise<GroqTitleAndTldr> {
     const token = getGroqToken();
+    const model = getGroqLlmModel();
     ll("generating title+tldr");
 
     const body = {
-      model: "llama-3.1-8b-instant",
+      model,
       temperature: 0.2,
       max_tokens: 256,
       messages: [
